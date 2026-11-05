@@ -1,0 +1,48 @@
+import type { ReactNode } from 'react'
+import { ChevronRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { cn } from '../../lib/cn'
+
+type Crumb = { label: string; to?: string }
+
+export function PageHeader({
+  crumbs,
+  title,
+  description,
+  actions,
+  className,
+}: {
+  crumbs?: Crumb[]
+  title: string
+  description?: string
+  actions?: ReactNode
+  className?: string
+}) {
+  return (
+    <div className={cn('flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between', className)}>
+      <div>
+        {crumbs && crumbs.length > 0 && (
+          <nav className="mb-2 flex flex-wrap items-center gap-1.5 text-[11.5px] font-medium text-muted">
+            {crumbs.map((crumb, index) => (
+              <span key={`${crumb.label}-${index}`} className="inline-flex items-center gap-1.5">
+                {index > 0 && <ChevronRight className="h-3 w-3 text-slate-300" />}
+                {crumb.to ? (
+                  <Link to={crumb.to} className="transition hover:text-brand-600">
+                    {crumb.label}
+                  </Link>
+                ) : (
+                  <span className="text-slate-500">{crumb.label}</span>
+                )}
+              </span>
+            ))}
+          </nav>
+        )}
+        <h1 className="text-[26px] font-bold leading-tight tracking-[-0.035em] text-ink">{title}</h1>
+        {description && (
+          <p className="mt-1.5 text-[13px] leading-5 text-muted">{description}</p>
+        )}
+      </div>
+      {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+    </div>
+  )
+}
