@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
-import { ChevronRight } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { ArrowLeft, ChevronRight } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
 import { cn } from '../../lib/cn'
 
 type Crumb = { label: string; to?: string }
@@ -18,9 +18,22 @@ export function PageHeader({
   actions?: ReactNode
   className?: string
 }) {
+  const navigate = useNavigate()
+  const showBack = !!crumbs && crumbs.length > 1
+
   return (
     <div className={cn('flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between', className)}>
       <div>
+        {showBack && (
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="mb-3 inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50 hover:text-brand-600"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Back
+          </button>
+        )}
         {crumbs && crumbs.length > 0 && (
           <nav className="mb-2 flex flex-wrap items-center gap-1.5 text-[11.5px] font-medium text-muted">
             {crumbs.map((crumb, index) => (
