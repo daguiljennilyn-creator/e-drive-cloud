@@ -164,7 +164,7 @@ export function SettingsLayout() {
           }
         />
 
-        <div className="grid gap-5 lg:grid-cols-[236px_minmax(0,1fr)]">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[236px_minmax(0,1fr)]">
           <SettingsNav />
           <div className="min-w-0">
             <Outlet />
@@ -177,7 +177,7 @@ export function SettingsLayout() {
 
 function SettingsNav() {
   return (
-    <nav aria-label="Settings sections" className="lg:sticky lg:top-5 lg:self-start">
+    <nav aria-label="Settings sections" className="min-w-0 lg:sticky lg:top-5 lg:self-start">
       <Card padded={false} className="overflow-hidden">
         <div className="flex gap-1 overflow-x-auto p-1.5 lg:flex-col lg:overflow-visible">
           {sections.map((section) => (

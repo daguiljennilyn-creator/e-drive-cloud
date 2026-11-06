@@ -6,6 +6,7 @@ import {
   Gauge,
   KeyRound,
   LockKeyhole,
+  LogOut,
   Plus,
   Settings,
   ShieldCheck,
@@ -14,11 +15,14 @@ import {
   WalletCards,
   X,
 } from 'lucide-react'
+import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { useToast } from '../../context/ToastContext'
 import { formatBytes } from '../../lib/format'
 import { cn } from '../../lib/cn'
 import { Button } from '../ui/Button'
+import { ConfirmDialog } from '../ui/ConfirmDialog'
 import { Logo } from './Logo'
 
 const mainNav = [
@@ -31,8 +35,26 @@ const mainNav = [
 ]
 
 export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
+  const { success, error } = useToast()
   const navigate = useNavigate()
+  const [confirming, setConfirming] = useState(false)
+  const [signingOut, setSigningOut] = useState(false)
+
+  const handleSignOut = async () => {
+    setSigningOut(true)
+    try {
+      await logout()
+      setConfirming(false)
+      onClose()
+      success('Signed out securely', 'Your vault remains encrypted on this device.')
+      navigate('/signin', { replace: true })
+    } catch {
+      error('Sign out failed', 'Please try again.')
+    } finally {
+      setSigningOut(false)
+    }
+  }
   const used = user?.storage_used_bytes ?? 0
   const limit = user?.storage_limit_bytes ?? 1
   const percentage = Math.min(100, (used / limit) * 100)
@@ -189,8 +211,28 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
             Zero-knowledge encryption
             <ShieldCheck className="h-2.5 w-2.5 text-emerald-300/70" />
           </div>
+          <button
+            type="button"
+            onClick={() => setConfirming(true)}
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] py-2.5 text-[12px] font-semibold text-red-200 transition hover:bg-red-500/15 lg:hidden"
+          >
+            <LogOut className="h-4 w-4" />
+            Sign out
+          </button>
         </div>
       </aside>
+
+      <ConfirmDialog
+        open={confirming}
+        onClose={() => setConfirming(false)}
+        onConfirm={handleSignOut}
+        loading={signingOut}
+        title="Sign out of E-Drive?"
+        description="Your encrypted files stay safe in your vault. You can sign back in at any time."
+        confirmLabel="Sign out"
+        cancelLabel="Stay signed in"
+        tone="danger"
+      />
     </>
   )
 }
