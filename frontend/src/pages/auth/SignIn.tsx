@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { ArrowRight, Eye, EyeOff, KeyRound, Mail, ShieldCheck, Sparkles } from 'lucide-react'
+import { ArrowRight, Eye, EyeOff, KeyRound, Mail } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 import { apiErrorMessage, apiFieldErrors, type ValidationErrors } from '../../lib/api'
@@ -14,7 +14,7 @@ type SignInState = {
 }
 
 export function SignIn() {
-  const { login, demoLogin } = useAuth()
+  const { login } = useAuth()
   const { success } = useToast()
   const navigate = useNavigate()
   const location = useLocation()
@@ -28,7 +28,6 @@ export function SignIn() {
   const [remember, setRemember] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [demoLoading, setDemoLoading] = useState(false)
   const [formError, setFormError] = useState<string | null>(
     state.notice ? null : null,
   )
@@ -54,20 +53,6 @@ export function SignIn() {
       setFormError(apiErrorMessage(caught, 'Unable to sign in with those details.'))
     } finally {
       setLoading(false)
-    }
-  }
-
-  const demo = async () => {
-    setFormError(null)
-    setDemoLoading(true)
-    try {
-      const user = await demoLogin()
-      success('Demo vault unlocked', `Signed in as ${user.name}.`)
-      navigate('/dashboard', { replace: true })
-    } catch (caught) {
-      setFormError(apiErrorMessage(caught, 'The demo vault is unavailable right now.'))
-    } finally {
-      setDemoLoading(false)
     }
   }
 
@@ -147,14 +132,6 @@ export function SignIn() {
           Sign in to E-Drive
         </Button>
       </form>
-
-      <div className="my-6 flex items-center gap-3">
-        <span className="h-px flex-1 bg-line" />
-        <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-400">
-          or explore instantly
-        </span>
-       
-      </div>
     </AuthShell>
   )
 }
